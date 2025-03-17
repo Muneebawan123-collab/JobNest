@@ -1,18 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
-import { Provider } from 'react-redux';
-import { setAuthToken } from './utils/auth';
-import { store } from './app/store';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './index.css'
+import { Provider } from 'react-redux'
+import { store } from './app/store'
 
-const token = localStorage.getItem('token');
-if (token) {
-  setAuthToken(token);
-}
+// Add this initialization
+import { initializeAuth } from './features/auth/authSlice'
 
-store.dispatch(initializeAuth());
+store.dispatch(initializeAuth())
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -20,4 +17,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <App />
     </Provider>
   </React.StrictMode>
-);
+)
