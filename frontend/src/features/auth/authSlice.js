@@ -1,0 +1,77 @@
+import { createSlice } from '@reduxjs/toolkit';
+import authService from './authService';
+
+const initialState = {
+  user: null,
+  token: null,
+  isLoading: false,
+  error: null,
+};
+
+export const loginUser = (credentials) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const data = await authService.login(credentials);
+    localStorage.setItem('token', data.token);
+    dispatch(setCredentials({ user: data.result, token: data.token }));
+    return true;
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Login failed'));
+    return false;
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+// Add this async thunk
+export const initializeAuth = () => async (dispatch) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const user = await authService.getProfile(token);
+      dispatch(setCredentials({ user, token }));
+    } catch (error) {
+      localStorage.removeItem('token');
+    }
+  }
+};
+
+export const signupUser = (userData) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const data = await authService.signup(userData);
+    localStorage.setItem('token', data.token);
+    dispatch(setCredentials({ user: data.result, token: data.token }));
+    return true;
+  } catch (error) {
+    dispatch(setError(error.response?.data?.message || 'Signup failed'));
+    return false;
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    setCredentials: (state, action) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+    },
+    logout: (state) => {
+      state.user = null;
+      state.token = null;
+      localStorage.removeItem('token');  // Ensures token is removed on logout
+    },
+    setLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
+  },
+});
+
+export const { setCredentials, logout, setLoading, setError } = authSlice.actions;
+export default authSlice.reducer;
