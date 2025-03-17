@@ -1,40 +1,44 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { setCredentials, setError } from '../features/auth/authSlice';
 import { loginUser } from '../features/auth/authSlice';
-
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading } = useSelector((state) => state.auth);
+  const { isLoading, error } = useSelector((state) => state.auth);
 
-  // In handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await dispatch(loginUser(formData));
-    if (success) navigate('/dashboard');
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email: formData.email,
+        password: formData.password
+      });
+      
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        dispatch(setCredentials(response.data.user));
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Login failed';
+      dispatch(setError(errorMessage));
+      console.error('Login error details:', error.response);
+    }
   };
-  
-  // Update submit button
-  <Button variant="primary" type="submit" disabled={isLoading}>
-    {isLoading ? 'Loading...' : 'Login'}
-  </Button>
 
   return (
-    <Container className="mt-5">
-      <Row className="justify-content-md-center">
-        <Col md={6}>
+    <div className="mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6">
           <Card>
             <Card.Body>
               <Card.Title className="text-center mb-4">Login</Card.Title>
               {error && <Alert variant="danger">{error}</Alert>}
+              
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>Email address</Form.Label>
@@ -59,19 +63,24 @@ const Login = () => {
                 </Form.Group>
 
                 <div className="d-grid gap-2">
-                  <Button variant="primary" type="submit">
-                    Login
+                  <Button 
+                    variant="primary" 
+                    type="submit" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Logging in...' : 'Login'}
                   </Button>
                 </div>
               </Form>
+              
               <div className="mt-3 text-center">
                 Don't have an account? <a href="/signup">Sign up here</a>
               </div>
             </Card.Body>
           </Card>
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

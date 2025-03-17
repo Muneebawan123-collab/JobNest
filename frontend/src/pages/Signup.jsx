@@ -1,36 +1,39 @@
-import { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { Form, Button, Card, Alert } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCredentials, setError } from '../features/auth/authSlice';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { Form, Button, Card, Alert, Row, Col } from 'react-bootstrap';
+import { signupUser } from '../features/auth/authSlice';
 
 const Signup = () => {
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isLoading, error } = useSelector((state) => state.auth);
+
+  // Initialize form with role from navigation state
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'jobSeeker'
+    role: location.state?.preselectedRole || 'jobSeeker' // ✅ Preselect role from Home.jsx
   });
-  const [error, setError] = useState('');
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { isLoading } = useSelector((state) => state.auth);
+  useEffect(() => {
+    if (location.state?.preselectedRole) {
+      setFormData((prev) => ({
+        ...prev,
+        role: location.state.preselectedRole
+      }));
+    }
+  }, [location.state]);
 
-  // In handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
     const success = await dispatch(signupUser(formData));
     if (success) navigate('/dashboard');
   };
-  
-  // Update submit button
-  <Button variant="primary" type="submit" disabled={isLoading}>
-    {isLoading ? 'Loading...' : 'Login'}
-  </Button>
 
   return (
-    <Container className="mt-5">
+    <div className="mt-5">
       <Row className="justify-content-md-center">
         <Col md={6}>
           <Card>
@@ -65,6 +68,7 @@ const Signup = () => {
                   <Form.Select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                    disabled={!!location.state?.preselectedRole} // ✅ Disable dropdown if preselected
                   >
                     <option value="jobSeeker">Job Seeker</option>
                     <option value="employer">Employer</option>
@@ -72,19 +76,19 @@ const Signup = () => {
                 </Form.Group>
 
                 <div className="d-grid gap-2">
-                  <Button variant="success" type="submit">
-                    Create Account
+                  <Button variant="success" type="submit" disabled={isLoading}>
+                    {isLoading ? 'Creating Account...' : 'Create Account'}
                   </Button>
                 </div>
               </Form>
               <div className="mt-3 text-center">
-                Already have an account? <a href="/login">Login here</a>
+                Already have an account? <Link to="/login">Login here</Link>
               </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-    </Container>
+    </div>
   );
 };
 

@@ -1,7 +1,16 @@
 import { Card, Button, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const handleSignupNavigation = (role) => {
+    navigate('/signup', { 
+      state: { preselectedRole: role },
+      replace: true
+    });
+  };
+
   return (
     <div className="mt-5 text-center">
       <h1 className="display-4 mb-4">Welcome to JobNest</h1>
@@ -15,7 +24,10 @@ const Home = () => {
               <Card.Text>
                 Find your next career opportunity
               </Card.Text>
-              <Button as={Link} to="/signup" variant="primary">
+              <Button 
+                variant="primary"
+                onClick={() => handleSignupNavigation('jobSeeker')}
+              >
                 Register as Job Seeker
               </Button>
             </Card.Body>
@@ -28,7 +40,10 @@ const Home = () => {
               <Card.Text>
                 Post jobs and find talent
               </Card.Text>
-              <Button as={Link} to="/signup" variant="success">
+              <Button 
+                variant="success"
+                onClick={() => handleSignupNavigation('employer')}
+              >
                 Register as Employer
               </Button>
             </Card.Body>

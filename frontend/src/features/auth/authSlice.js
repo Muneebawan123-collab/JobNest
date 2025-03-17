@@ -6,21 +6,19 @@ const initialState = {
   token: null,
   isLoading: false,
   error: null,
+  preselectedRole: null,  // ✅ Added preselectedRole to state
 };
 
+// Verify the loginUser thunk exists
 export const loginUser = (credentials) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    dispatch(clearError());
-    
-    const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
-    
+    const response = await axios.post('/api/auth/login', credentials);
     localStorage.setItem('token', response.data.token);
-    dispatch(setCredentials({
+    dispatch(setCredentials({ 
       user: response.data.result,
       token: response.data.token
     }));
-    
     return true;
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Login failed'));
@@ -80,8 +78,11 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    setPreselectedRole: (state, action) => {
+      state.preselectedRole = action.payload; // ✅ Added new reducer to handle preselectedRole
+    }
   },
 });
 
-export const { setCredentials, logout, setLoading, setError } = authSlice.actions;
+export const { setCredentials, logout, setLoading, setError, clearError, setPreselectedRole } = authSlice.actions;
 export default authSlice.reducer;
