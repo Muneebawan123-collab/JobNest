@@ -1,20 +1,20 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
-import { initializeAuth } from '../features/auth/authSlice';
+import { loginUser } from '../features/auth/authSlice';
 
 const ProtectedRoute = () => {
   const dispatch = useDispatch();
-  const { token, user } = useSelector((state) => state.auth);
+  const { token, user, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (token && !user) {
-      dispatch(initializeAuth());
+      dispatch(loginUser()); // Re-validate token
     }
   }, [dispatch, token, user]);
 
+  if (loading) return <div className="text-center mt-5">Loading...</div>;
   if (!token) return <Navigate to="/login" replace />;
-  if (!user) return <div>Loading...</div>; // Add loading spinner
 
   return <Outlet />;
 };

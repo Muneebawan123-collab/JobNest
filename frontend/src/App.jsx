@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from './features/auth/authSlice';
 import './index.css';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useContext } from 'react';
 
 function ErrorFallback({ error }) {
   return (
@@ -61,7 +62,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          </Routes>   
         </ErrorBoundary>
       </Container>
     </>

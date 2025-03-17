@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { loginUser } from '../features/auth/authSlice';
+import axios from 'axios';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -13,20 +14,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
-        email: formData.email,
-        password: formData.password
-      });
+      const result = await dispatch(loginUser(formData));
       
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        dispatch(setCredentials(response.data.user));
+      if (result.payload?.token) {
         navigate('/dashboard');
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Login failed';
-      dispatch(setError(errorMessage));
-      console.error('Login error details:', error.response);
+      console.error('Login failed:', error);
     }
   };
 

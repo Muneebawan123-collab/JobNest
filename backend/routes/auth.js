@@ -11,26 +11,35 @@ router.post('/signup', async (req, res) => {
   try {
     const { email, password, role } = req.body;
     
-    // Check if user exists
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: 'User already exists' });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create user
     const user = await User.create({
       email,
       password: hashedPassword,
       role
     });
 
-    // Create token
-    const token = jwt.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-    res.status(201).json({ result: user, token });
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Something went wrong' });
+    console.error('Signup error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -55,12 +64,19 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign(
-      { id: user._id, email: user.email }, 
-      process.env.JWT_SECRET, 
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ token, user: { id: user._id, email: user.email, role: user.role } });
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
