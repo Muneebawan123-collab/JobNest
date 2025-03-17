@@ -56,8 +56,11 @@ function App() {
   
   {/* Protected routes */}
   <Route element={<ProtectedRoute />}>
-    <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/dashboard" element={<Dashboard />} />
   </Route>
+
+  {/* Catch-all route */}
+  <Route path="*" element={<Navigate to="/" replace />} />
 </Routes>
     </BrowserRouter>
   );

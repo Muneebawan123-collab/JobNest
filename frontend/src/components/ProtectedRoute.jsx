@@ -8,13 +8,13 @@ const ProtectedRoute = () => {
   const { token, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!user && token) {
+    if (token && !user) {
       dispatch(initializeAuth());
     }
-  }, [dispatch, user, token]);
+  }, [dispatch, token, user]);
 
-  if (!token) return <Navigate to="/login" />;
-  if (token && !user) return <div>Loading...</div>; // Add loading state
+  if (!token) return <Navigate to="/login" replace />;
+  if (!user) return <div>Loading...</div>; // Add loading spinner
 
   return <Outlet />;
 };

@@ -11,9 +11,16 @@ const initialState = {
 export const loginUser = (credentials) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const data = await authService.login(credentials);
-    localStorage.setItem('token', data.token);
-    dispatch(setCredentials({ user: data.result, token: data.token }));
+    dispatch(clearError());
+    
+    const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
+    
+    localStorage.setItem('token', response.data.token);
+    dispatch(setCredentials({
+      user: response.data.result,
+      token: response.data.token
+    }));
+    
     return true;
   } catch (error) {
     dispatch(setError(error.response?.data?.message || 'Login failed'));
@@ -69,6 +76,9 @@ const authSlice = createSlice({
     },
     setError: (state, action) => {
       state.error = action.payload;
+    },
+    clearError: (state) => {
+      state.error = null;
     },
   },
 });

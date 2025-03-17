@@ -12,17 +12,17 @@ const Signup = () => {
     role: 'jobSeeker'
   });
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isLoading } = useSelector((state) => state.auth);
 
   // In handleSubmit
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const success = await dispatch(signupUser(formData));
-  if (success) navigate('/dashboard');
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const success = await dispatch(signupUser(formData));
+    if (success) navigate('/dashboard');
+  };
   
   // Update submit button
   <Button variant="primary" type="submit" disabled={isLoading}>

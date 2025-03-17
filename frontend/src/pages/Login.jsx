@@ -4,22 +4,23 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCredentials, setError } from '../features/auth/authSlice';
+import { loginUser } from '../features/auth/authSlice';
 
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isLoading } = useSelector((state) => state.auth);
 
   // In handleSubmit
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const success = await dispatch(loginUser(formData));
-  if (success) navigate('/dashboard');
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const success = await dispatch(loginUser(formData));
+    if (success) navigate('/dashboard');
+  };
   
   // Update submit button
   <Button variant="primary" type="submit" disabled={isLoading}>
