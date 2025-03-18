@@ -11,6 +11,7 @@ import { logout } from './features/auth/authSlice';
 import './index.css';
 import JobSeekerProfile from './pages/profile/JobSeekerProfile';
 import EmployerProfile from './pages/profile/EmployerProfile';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const dispatch = useDispatch();
@@ -24,41 +25,43 @@ function App() {
   };
 
   return (
-    <>
-      <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
-        <Container>
-          <Navbar.Brand as={Link} to="/">JobNest</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link as={Link} to="/">Home</Nav.Link>
-              {!token && <Nav.Link as={Link} to="/login">Login</Nav.Link>}
-              {!token && <Nav.Link as={Link} to="/signup">Sign Up</Nav.Link>}
-              {token && <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>}
-            </Nav>
-            {token && (
-              <Nav>
-                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+    <ErrorBoundary>
+      <>
+        <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+          <Container>
+            <Navbar.Brand as={Link} to="/">JobNest</Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="me-auto">
+                <Nav.Link as={Link} to="/">Home</Nav.Link>
+                {!token && <Nav.Link as={Link} to="/login">Login</Nav.Link>}
+                {!token && <Nav.Link as={Link} to="/signup">Sign Up</Nav.Link>}
+                {token && <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>}
               </Nav>
-            )}
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+              {token && (
+                <Nav>
+                  <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                </Nav>
+              )}
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
 
-      <Container>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Route>
-          <Route path="/profile/jobseeker" element={<JobSeekerProfile />} />
-          <Route path="/profile/employer" element={<EmployerProfile />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Container>
-    </>
+        <Container>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
+            <Route path="/profile/jobseeker" element={<JobSeekerProfile />} />
+            <Route path="/profile/employer" element={<EmployerProfile />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Container>
+      </>
+    </ErrorBoundary>
   );
 }
 

@@ -11,43 +11,65 @@ const Dashboard = () => {
       <Card className="dashboard-card">
         <Card.Body>
           <Card.Title className="mb-4">
-            Welcome, {user?.email}
+            {profile?.fullName || user?.email}
           </Card.Title>
           
           {user?.role === 'jobSeeker' ? (
-            <>
-              <Card.Text>
-                {profile?.skills?.length > 0 ? (
-                  `Your skills: ${profile.skills.join(', ')}`
-                ) : (
-                  <Alert variant="warning">Complete your profile to get noticed by employers!</Alert>
-                )}
-              </Card.Text>
-              <Button as={Link} to="/profile/jobseeker" variant="primary">
-                {profile ? 'Edit Profile' : 'Create Profile'}
-              </Button>
-            </>
+            <JobSeekerDashboard profile={profile} />
           ) : (
-            <>
-              <Card.Text>
-                {profile?.companyName ? (
-                  `Company: ${profile.companyName}`
-                ) : (
-                  <Alert variant="warning">Set up your company profile to post jobs!</Alert>
-                )}
-              </Card.Text>
-              <Button as={Link} to="/profile/employer" variant="primary" className="me-2">
-                {profile ? 'Edit Company Profile' : 'Create Company Profile'}
-              </Button>
-              <Button as={Link} to="/jobs/new" variant="success">
-                Post New Job
-              </Button>
-            </>
+            <EmployerDashboard profile={profile} />
           )}
         </Card.Body>
       </Card>
     </div>
   );
 };
+
+const JobSeekerDashboard = ({ profile }) => (
+  <>
+    {profile ? (
+      <>
+        <Card.Text>
+          <strong>Skills:</strong> {profile.skills?.join(', ') || 'None listed'}
+        </Card.Text>
+        <Button as={Link} to="/profile/jobseeker" variant="primary">
+          Edit Profile
+        </Button>
+      </>
+    ) : (
+      <Alert variant="warning">
+        Complete your profile to get noticed by employers!
+        <Button as={Link} to="/profile/jobseeker" variant="success" className="ms-3">
+          Create Profile
+        </Button>
+      </Alert>
+    )}
+  </>
+);
+
+const EmployerDashboard = ({ profile }) => (
+  <>
+    {profile ? (
+      <>
+        <Card.Text>
+          <strong>Company:</strong> {profile.companyName}
+        </Card.Text>
+        <Button as={Link} to="/profile/employer" variant="primary" className="me-2">
+          Edit Profile
+        </Button>
+        <Button as={Link} to="/jobs/new" variant="success">
+          Post Job
+        </Button>
+      </>
+    ) : (
+      <Alert variant="warning">
+        Set up your company profile to post jobs!
+        <Button as={Link} to="/profile/employer" variant="success" className="ms-3">
+          Create Profile
+        </Button>
+      </Alert>
+    )}
+  </>
+);
 
 export default Dashboard;

@@ -2,18 +2,26 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // ✅ Define getProfile properly
-const getProfile = createAsyncThunk(
-  'profile/getProfile',
-  async (_, { getState }) => {
-    const { auth } = getState();
-    const response = await axios.get('/api/profiles/me', {
-      headers: {
-        Authorization: `Bearer ${auth.token}`
+// Update getProfile to handle empty profiles
+export const getProfile = createAsyncThunk(
+    'profile/getProfile',
+    async (_, { getState, rejectWithValue }) => {
+      try {
+        const { auth } = getState();
+        const response = await axios.get('/api/profiles/me', {
+          headers: { Authorization: `Bearer ${auth.token}` }
+        });
+        
+        if (response.status === 404) {
+          return null; // No profile exists
+        }
+        
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data?.message || 'Profile not found');
       }
-    });
-    return response.data;
-  }
-);
+    }
+  );
 
 // ✅ Define updateProfile
 const updateProfile = createAsyncThunk(
@@ -34,12 +42,12 @@ const updateProfile = createAsyncThunk(
 );
 
 const profileSlice = createSlice({
-  name: 'profile',
-  initialState: {
-    profile: null,
-    loading: false,
-    error: null
-  },
+    name: 'profile',
+    reducers: {
+      clearProfileError: (state) => {
+        state.error = null;
+      }
+    },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -72,5 +80,6 @@ const profileSlice = createSlice({
 });
 
 // ✅ Export getProfile properly
-export { getProfile, updateProfile };
+export { updateProfile };
 export default profileSlice.reducer;
+export const { clearProfileError } = profileSlice.actions;
