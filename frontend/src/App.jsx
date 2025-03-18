@@ -9,6 +9,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from './features/auth/authSlice';
 import './index.css';
+import JobSeekerProfile from './pages/profile/JobSeekerProfile';
+import EmployerProfile from './pages/profile/EmployerProfile';
 
 function App() {
   const dispatch = useDispatch();
@@ -51,6 +53,8 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
+          <Route path="/profile/jobseeker" element={<JobSeekerProfile />} />
+          <Route path="/profile/employer" element={<EmployerProfile />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Container>

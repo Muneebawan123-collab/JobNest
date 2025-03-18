@@ -39,6 +39,7 @@ const Login = () => {
                   <Form.Control
                     type="email"
                     placeholder="Enter email"
+                     autoComplete="username"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
@@ -50,6 +51,7 @@ const Login = () => {
                   <Form.Control
                     type="password"
                     placeholder="Password"
+                     autoComplete="current-password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required

@@ -14,3 +14,19 @@ body {
 a {
   text-decoration: none;
 }
+
+.dashboard-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-form {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}

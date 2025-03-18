@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
+import profileRoutes from './routes/profiles.js';
 
 dotenv.config();
 
@@ -23,6 +24,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Routes
 app.use('/api/auth', authRoutes);
+
+app.use('/api/profiles', profileRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
