@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Login
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/auth/login', credentials);
+      const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
       localStorage.setItem('token', response.data.token);
       return response.data;
     } catch (error) {
@@ -15,19 +14,21 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Signup
 export const signupUser = createAsyncThunk(
   'auth/signup',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/auth/signup', userData);
-      localStorage.setItem('token', response.data.token);
-      return response.data;
+      const response = await axios.post('/api/auth/signup', {
+        ...userData,
+        email: userData.email.toLowerCase(), // Send lowercase email
+      });
+      return response.data; // Return response data
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Signup failed');
     }
   }
 );
+
 
 const authSlice = createSlice({
   name: 'auth',
@@ -38,6 +39,10 @@ const authSlice = createSlice({
     error: null
   },
   reducers: {
+    logout: (state) => {
+      state.user = null;
+      state.token = null;
+    },
     clearError: (state) => {
       state.error = null;
     }
@@ -73,5 +78,5 @@ const authSlice = createSlice({
   }
 });
 
-export const { clearError } = authSlice.actions;
+export const { logout, clearError } = authSlice.actions;
 export default authSlice.reducer;

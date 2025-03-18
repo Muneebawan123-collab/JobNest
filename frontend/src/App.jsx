@@ -1,5 +1,6 @@
-import { Routes, Route, Navigate, Link } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -8,26 +9,16 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from './features/auth/authSlice';
 import './index.css';
-import { ErrorBoundary } from 'react-error-boundary';
-import { useContext } from 'react';
-
-function ErrorFallback({ error }) {
-  return (
-    <div role="alert" className="alert alert-danger">
-      <p>Something went wrong:</p>
-      <pre>{error.message}</pre>
-    </div>
-  );
-}
 
 function App() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { token } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
     localStorage.removeItem('token');
-    window.location.href = '/'; // Ensures logout redirects properly
+    navigate('/');
   };
 
   return (
@@ -53,17 +44,15 @@ function App() {
       </Navbar>
 
       <Container>
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>   
-        </ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Container>
     </>
   );
