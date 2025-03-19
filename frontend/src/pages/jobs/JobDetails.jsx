@@ -15,8 +15,12 @@ const JobDetails = () => {
     dispatch(fetchJobDetails(id));
   }, [dispatch, id]);
 
+  // Handle loading and error states
   if (loading) return <Spinner animation="border" className="d-block mx-auto mt-5" />;
   if (error) return <Alert variant="danger" className="mt-5">{error}</Alert>;
+  
+  // Ensure job exists before rendering
+  if (!job) return <Alert variant="warning" className="mt-5">Job details not available</Alert>;
 
   return (
     <div className="container mt-4">
@@ -24,38 +28,38 @@ const JobDetails = () => {
         <Card.Body>
           <div className="d-flex justify-content-between align-items-start">
             <div>
-              <Card.Title>{job.title}</Card.Title>
+              <Card.Title>{job?.title || "Job Title Not Available"}</Card.Title>
               <Card.Subtitle className="mb-3 text-muted">
-                {job.employer.companyName}
+                {job?.employer?.companyName || "Company Not Available"}
               </Card.Subtitle>
-              <Badge bg="primary" className="me-2">{job.employmentType}</Badge>
-              <Badge bg="secondary">{job.location}</Badge>
+              <Badge bg="primary" className="me-2">{job?.employmentType || "N/A"}</Badge>
+              <Badge bg="secondary">{job?.location || "Location Not Available"}</Badge>
             </div>
             <div className="text-end">
-              <h4 className="text-success">${job.salary}/year</h4>
+              <h4 className="text-success">${job?.salary || "N/A"}/year</h4>
               <small className="text-muted">
-                Posted: {new Date(job.createdAt).toLocaleDateString()}
+                Posted: {job?.createdAt ? new Date(job.createdAt).toLocaleDateString() : "N/A"}
               </small>
             </div>
           </div>
 
-          <Card.Text className="mt-4">
+        <div className="mt-4">
             <h5>Description</h5>
             <div className="text-muted" style={{ whiteSpace: 'pre-wrap' }}>
-              {job.description}
+            {job.description}
             </div>
-          </Card.Text>
+        </div>
 
-          <Card.Text>
+         <div className="mt-4">
             <h5>Requirements</h5>
             <ul>
-              {job.requirements.map((req, i) => (
+                {job.requirements.map((req, i) => (
                 <li key={i}>{req}</li>
-              ))}
+            ))}
             </ul>
-          </Card.Text>
+        </div>
 
-          {user?.role === 'jobSeeker' && <ApplicationForm jobId={job._id} />}
+          {user?.role === 'jobSeeker' && job?._id && <ApplicationForm jobId={job._id} />}
         </Card.Body>
       </Card>
     </div>

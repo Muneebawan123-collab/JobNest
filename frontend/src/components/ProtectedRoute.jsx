@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import { getProfile } from '../features/profile/profileSlice';
 import Spinner from 'react-bootstrap/Spinner';
+import { jwtDecode } from "jwt-decode"; // ✅ Correct
 
 const ProtectedRoute = () => {
   const dispatch = useDispatch();
