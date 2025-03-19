@@ -6,7 +6,8 @@ const employerSchema = new mongoose.Schema({
   website: String,
   location: String,
   description: String,
-  contactEmail: String
+  contactEmail: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
 });
 
-export default mongoose.model('Employer', employerSchema);
+export default mongoose.model('EmployerProfile', employerSchema);

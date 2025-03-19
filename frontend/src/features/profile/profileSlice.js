@@ -1,54 +1,64 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+// ✅ Define the initial state properly
+const initialState = {
+  profile: null,
+  loading: false,
+  error: null
+};
+
 // ✅ Define getProfile properly
-// Update getProfile to handle empty profiles
-export const getProfile = createAsyncThunk(
-    'profile/getProfile',
-    async (_, { getState, rejectWithValue }) => {
-      try {
-        const { auth } = getState();
-        const response = await axios.get('/api/profiles/me', {
-          headers: { Authorization: `Bearer ${auth.token}` }
-        });
-        
-        if (response.status === 404) {
-          return null; // No profile exists
-        }
-        
-        return response.data;
-      } catch (error) {
-        return rejectWithValue(error.response?.data?.message || 'Profile not found');
+const getProfile = createAsyncThunk(
+  'profile/getProfile',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState();
+      const response = await axios.get('/api/profiles/me', {
+        headers: { Authorization: `Bearer ${auth.token}` }
+      });
+
+      if (response.status === 404) {
+        return null; // No profile exists
       }
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Profile not found');
     }
-  );
+  }
+);
 
 // ✅ Define updateProfile
 const updateProfile = createAsyncThunk(
   'profile/updateProfile',
-  async (profileData, { getState }) => {
-    const { auth } = getState();
-    const endpoint = auth.user.role === 'jobSeeker' 
-      ? '/api/profiles/jobseeker' 
-      : '/api/profiles/employer';
+  async (profileData, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState();
+      const endpoint = auth.user.role === 'jobSeeker' 
+        ? '/api/profiles/jobseeker' 
+        : '/api/profiles/employer';
 
-    const response = await axios.post(endpoint, profileData, {
-      headers: {
-        Authorization: `Bearer ${auth.token}`
-      }
-    });
-    return response.data;
+      const response = await axios.post(endpoint, profileData, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Profile update failed');
+    }
   }
 );
 
 const profileSlice = createSlice({
-    name: 'profile',
-    reducers: {
-      clearProfileError: (state) => {
-        state.error = null;
-      }
-    },
-  reducers: {},
+  name: 'profile',
+  initialState, // ✅ Proper initialization
+  reducers: {
+    clearProfileError: (state) => {
+      state.error = null;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getProfile.pending, (state) => {
@@ -61,7 +71,7 @@ const profileSlice = createSlice({
       })
       .addCase(getProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload; // Fix error handling
       })
       // ✅ Handle updateProfile cases
       .addCase(updateProfile.pending, (state) => {
@@ -74,12 +84,12 @@ const profileSlice = createSlice({
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload; // Fix error handling
       });
   }
 });
 
-// ✅ Export getProfile properly
-export { updateProfile };
+// ✅ Export properly
 export default profileSlice.reducer;
 export const { clearProfileError } = profileSlice.actions;
+export { getProfile, updateProfile };

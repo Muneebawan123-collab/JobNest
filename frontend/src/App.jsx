@@ -1,3 +1,4 @@
+import JobDetails from './pages/jobs/JobDetails';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -12,6 +13,10 @@ import './index.css';
 import JobSeekerProfile from './pages/profile/JobSeekerProfile';
 import EmployerProfile from './pages/profile/EmployerProfile';
 import ErrorBoundary from './components/ErrorBoundary';
+import JobsList from './pages/jobs/JobsList';
+import PostJob from './pages/jobs/PostJob';
+import UserApplications from './pages/applications/UserApplications';
+import EmployerApplications from './pages/applications/EmployerApplications';
 
 function App() {
   const dispatch = useDispatch();
@@ -34,6 +39,7 @@ function App() {
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
                 <Nav.Link as={Link} to="/">Home</Nav.Link>
+                <Nav.Link as={Link} to="/jobs">Jobs</Nav.Link> {/* ✅ Added Jobs link */}
                 {!token && <Nav.Link as={Link} to="/login">Login</Nav.Link>}
                 {!token && <Nav.Link as={Link} to="/signup">Sign Up</Nav.Link>}
                 {token && <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>}
@@ -55,9 +61,14 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
+            <Route path="/jobs/:id" element={<JobDetails />} />
             <Route path="/profile/jobseeker" element={<JobSeekerProfile />} />
             <Route path="/profile/employer" element={<EmployerProfile />} />
             <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/jobs" element={<JobsList />} />
+            <Route path="/jobs/new" element={<PostJob />} />
+            <Route path="/applications" element={<UserApplications />} />
+            <Route path="/employer/applications" element={<EmployerApplications />} />
           </Routes>
         </Container>
       </>

@@ -13,7 +13,7 @@ const Dashboard = () => {
           <Card.Title className="mb-4">
             {profile?.fullName || user?.email}
           </Card.Title>
-          
+
           {user?.role === 'jobSeeker' ? (
             <JobSeekerDashboard profile={profile} />
           ) : (
@@ -32,9 +32,12 @@ const JobSeekerDashboard = ({ profile }) => (
         <Card.Text>
           <strong>Skills:</strong> {profile.skills?.join(', ') || 'None listed'}
         </Card.Text>
-        <Button as={Link} to="/profile/jobseeker" variant="primary">
+        <Button as={Link} to="/profile/jobseeker" variant="primary" className="me-2">
           Edit Profile
         </Button>
+        <Button as={Link} to="/applications" variant="info">
+          View My Applications
+        </Button> {/* ✅ Added this button */}
       </>
     ) : (
       <Alert variant="warning">
@@ -57,9 +60,12 @@ const EmployerDashboard = ({ profile }) => (
         <Button as={Link} to="/profile/employer" variant="primary" className="me-2">
           Edit Profile
         </Button>
-        <Button as={Link} to="/jobs/new" variant="success">
+        <Button as={Link} to="/jobs/new" variant="success" className="me-2">
           Post Job
         </Button>
+        <Button as={Link} to="/employer/applications" variant="info">
+          View Applications
+        </Button> {/* ✅ Added this button */}
       </>
     ) : (
       <Alert variant="warning">

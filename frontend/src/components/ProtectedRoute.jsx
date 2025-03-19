@@ -10,10 +10,22 @@ const ProtectedRoute = () => {
   const { profile, loading } = useSelector((state) => state.profile);
 
   useEffect(() => {
-    if (token && !profile) {
-      dispatch(getProfile()); // Correct action call
-    }
-  }, [dispatch, token, profile]);
+    const checkToken = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const { exp } = jwtDecode(token);
+          if (Date.now() >= exp * 1000) {
+            localStorage.removeItem('token');
+            dispatch(logout());
+          }
+        }
+      } catch (error) {
+        console.error('Token check error:', error);
+      }
+    };
+    checkToken();
+  }, [dispatch]);
 
   if (!token) return <Navigate to="/login" replace />;
   

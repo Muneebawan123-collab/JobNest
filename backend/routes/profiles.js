@@ -51,28 +51,25 @@ router.post('/jobseeker', auth, async (req, res) => {
 });
 
 // Create/Update Employer Profile
+// Add these to existing routes
 router.post('/employer', auth, async (req, res) => {
-  const { companyName, website, location, description, contactEmail } = req.body;
-
-  const profileFields = {
-    user: req.user.id,
-    companyName,
-    website,
-    location,
-    description,
-    contactEmail
-  };
-
-  try {
-    let profile = await Employer.findOneAndUpdate(
-      { user: req.user.id },
-      { $set: profileFields },
-      { new: true, upsert: true }
-    );
-    res.json(profile);
-  } catch (err) {
-    res.status(500).send('Server Error');
-  }
-});
+    try {
+      const { companyName, website, location, description, contactEmail } = req.body;
+      
+      if (!companyName || !contactEmail) {
+        return res.status(400).json({ message: 'Company name and contact email are required' });
+      }
+  
+      const profile = await Employer.findOneAndUpdate(
+        { user: req.user.id },
+        { companyName, website, location, description, contactEmail },
+        { new: true, upsert: true }
+      );
+      
+      res.json(profile);
+    } catch (err) {
+      res.status(500).send('Server Error');
+    }
+  });
 
 export default router;
