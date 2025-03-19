@@ -17,6 +17,7 @@ import JobsList from './pages/jobs/JobsList';
 import PostJob from './pages/jobs/PostJob';
 import UserApplications from './pages/applications/UserApplications';
 import EmployerApplications from './pages/applications/EmployerApplications';
+import NotificationBell from './components/NotificationBell';
 
 function App() {
   const dispatch = useDispatch();
@@ -39,14 +40,15 @@ function App() {
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
                 <Nav.Link as={Link} to="/">Home</Nav.Link>
-                <Nav.Link as={Link} to="/jobs">Jobs</Nav.Link> {/* ✅ Added Jobs link */}
+                <Nav.Link as={Link} to="/jobs">Jobs</Nav.Link>
                 {!token && <Nav.Link as={Link} to="/login">Login</Nav.Link>}
                 {!token && <Nav.Link as={Link} to="/signup">Sign Up</Nav.Link>}
                 {token && <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>}
               </Nav>
               {token && (
                 <Nav>
-                  <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                  <NotificationBell /> {/* ✅ Added NotificationBell here */}
+                  <Nav.Link onClick={handleLogout} className="ms-3">Logout</Nav.Link>
                 </Nav>
               )}
             </Navbar.Collapse>

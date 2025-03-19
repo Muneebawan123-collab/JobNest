@@ -1,6 +1,7 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
 import Application from '../models/Application.js';
+import upload from '../utils/fileUpload.js';
 
 const router = express.Router();
 
@@ -45,24 +46,24 @@ router.get('/my-applications', auth, async (req, res) => {
   });
   
 
-router.post('/', auth, async (req, res) => {
-  try {
-    const { jobId, resume, coverLetter } = req.body;
-    
-    if (!resume) return res.status(400).json({ msg: 'Resume is required' });
-
-    const application = new Application({
-      job: jobId,
-      applicant: req.user.id,
-      resume,
-      coverLetter
-    });
-
-    await application.save();
-    res.status(201).json(application);
-  } catch (err) {
-    res.status(500).send('Server Error');
-  }
-});
+  router.post('/', auth, upload.single('resume'), async (req, res) => {
+    try {
+      const { jobId, coverLetter } = req.body;
+      
+      if (!req.file) return res.status(400).json({ msg: 'Resume is required' });
+  
+      const application = new Application({
+        job: jobId,
+        applicant: req.user.id,
+        resume: `/uploads/${req.file.filename}`,
+        coverLetter
+      });
+  
+      await application.save();
+      res.status(201).json(application);
+    } catch (err) {
+      res.status(500).send('Server Error');
+    }
+  });
 
 export default router;

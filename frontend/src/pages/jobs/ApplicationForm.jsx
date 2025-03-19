@@ -3,49 +3,69 @@ import { Form, Button, Alert } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 const ApplicationForm = ({ jobId }) => {
-  const [formData, setFormData] = useState({
-    resume: '',
-    coverLetter: ''
-  });
-  const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.applications);
+    const [formData, setFormData] = useState({
+      resume: null,
+      coverLetter: '',
+      uploadProgress: 0
+    });
+    const dispatch = useDispatch();
+    const { loading, error } = useSelector((state) => state.applications);
+  
+    const handleFileChange = (e) => {
+      setFormData({ ...formData, resume: e.target.files[0] });
+    };
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      const { token } = useSelector((state) => state.auth);
+      
+      const data = new FormData();
+      data.append('resume', formData.resume);
+      data.append('coverLetter', formData.coverLetter);
+      data.append('jobId', jobId);
+  
+      try {
+        const response = await axios.post('/api/applications', data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setFormData(prev => ({ ...prev, uploadProgress: progress }));
+          }
+        });
+        // Handle success
+      } catch (error) {
+        // Handle error
+      }
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add application submission logic
-  };
-
-  return (
-    <div className="mt-5 border-top pt-4">
-      <h4>Apply for this Position</h4>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label>Resume URL *</Form.Label>
-          <Form.Control
-            type="url"
-            value={formData.resume}
-            onChange={(e) => setFormData({ ...formData, resume: e.target.value })}
-            placeholder="Paste your resume link (Google Drive, Dropbox, etc.)"
-            required
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Cover Letter</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={4}
-            value={formData.coverLetter}
-            onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
-            placeholder="Explain why you're a good fit..."
-          />
-        </Form.Group>
+    return (
+        <Form onSubmit={handleSubmit} encType="multipart/form-data">
+          <Form.Group className="mb-3">
+            <Form.Label>Upload Resume (PDF only) *</Form.Label>
+            <Form.Control
+              type="file"
+              onChange={handleFileChange}
+              accept="application/pdf"
+              required
+            />
+            {formData.uploadProgress > 0 && (
+              <ProgressBar
+                now={formData.uploadProgress}
+                label={`${formData.uploadProgress}%`}
+                className="mt-2"
+              />
+            )}
+          </Form.Group>
 
         <Button variant="primary" type="submit" disabled={loading}>
           {loading ? 'Submitting...' : 'Submit Application'}
         </Button>
       </Form>
-    </div>
   );
 };
 

@@ -9,7 +9,7 @@ export const store = configureStore({
     auth: authReducer,
     profile: profileReducer, // Must be the default export
     jobs: jobsReducer,
-    applications: applicationsReducer
+    applications: applicationsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
